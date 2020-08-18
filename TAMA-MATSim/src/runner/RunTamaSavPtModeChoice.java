@@ -100,11 +100,11 @@ public class RunTamaSavPtModeChoice {
 	public static int WAIT_TIME = 720;
 	public static int BETA = 900;
 	public static int SEATS = 10;
-	public static int NUM_OF_VEHICLES = 2500;
+	public static int NUM_OF_VEHICLES = 1000;
 	public static boolean IS_REJECTION = true;
 	public static boolean IS_REBALANCE = true;
 	public static boolean IS_STOP_BASED = true;
-	public static boolean IS_SAMPLE_POPULATION = true;
+	public static boolean IS_SAMPLE_POPULATION = false;
 	public static double SAMPLE_POPUALTION_FACTOR = 0.01;
 
 	final public static String RUN_ID = "/" + 3;
@@ -451,7 +451,8 @@ public class RunTamaSavPtModeChoice {
 		final String allowedMode = TransportMode.car;
 		Stream<DvrpVehicleSpecification> vehicleSpecificationStream = scenario.getNetwork().getLinks().entrySet()
 				.stream().filter(entry -> entry.getValue().getAllowedModes().contains(allowedMode)) // drt can only start on links with Transport mode 'car'
-				.sorted((e1, e2) -> (random.nextInt(2) - 1)) // shuffle links.limit(numOfVehicles) // select the first *numberOfVehicles* links
+				.sorted((e1, e2) -> (random.nextInt(2) - 1)) // shuffle links
+				.limit(numOfVehicles) // select the first *numberOfVehicles* links
 				.map(entry -> ImmutableDvrpVehicleSpecification.newBuilder()
 						.id(Id.create("drt_" + i[0]++, DvrpVehicle.class)).startLinkId(entry.getKey()).capacity(seats)
 						.serviceBeginTime(operationStartTime).serviceEndTime(operationEndTime).build());
