@@ -52,6 +52,7 @@ import org.matsim.core.config.groups.ControlerConfigGroup.EventsFileFormat;
 import org.matsim.core.config.groups.ControlerConfigGroup.RoutingAlgorithmType;
 import org.matsim.core.config.groups.PlanCalcScoreConfigGroup;
 import org.matsim.core.config.groups.PlanCalcScoreConfigGroup.ActivityParams;
+import org.matsim.core.config.groups.PlansConfigGroup.HandlingOfPlansWithoutRoutingMode;
 import org.matsim.core.config.groups.QSimConfigGroup.StarttimeInterpretation;
 import org.matsim.core.config.groups.QSimConfigGroup.TrafficDynamics;
 import org.matsim.core.config.groups.StrategyConfigGroup;
@@ -130,10 +131,10 @@ public class RunTamaSavPtModeChoice {
 		Config config = createTamaConfig(IS_SAMPLE_POPULATION);
 
 		Scenario scenario = ScenarioUtils.loadScenario(config);
-		Controler controler = new Controler(scenario);
+		//Controler controler = new Controler(scenario);
 
 		//controler = DrtControlerCreator.createControlerWithSingleModeDrt(config, false);
-		controler = DrtControlerCreator.createControler(config, false);
+		Controler controler = DrtControlerCreator.createControler(config, false);
 		
 		// Add raptor
 		controler.addOverridingModule(new SwissRailRaptorModule());
@@ -164,6 +165,7 @@ public class RunTamaSavPtModeChoice {
 			config.plans().setInputFile(INPUT_POPULATION);
 		}
 //		config.plans().setInsistingOnUsingDeprecatedPersonAttributeFile(true);
+		config.plans().setHandlingOfPlansWithoutRoutingMode(HandlingOfPlansWithoutRoutingMode.useMainModeIdentifier);
 		config.facilities().setInputFile(INPUT_FACILITES);
 
 		// modify controler
@@ -173,7 +175,7 @@ public class RunTamaSavPtModeChoice {
 		config.controler().setOutputDirectory(OUTPUT_FOLDER + RUN_ID + "/");
 		config.controler().setOverwriteFileSetting(OverwriteFileSetting.overwriteExistingFiles);
 		config.controler().setFirstIteration(0);
-		config.controler().setLastIteration(300);
+		config.controler().setLastIteration(10);
 		config.controler().setMobsim("qsim");
 		config.controler().setRoutingAlgorithmType(RoutingAlgorithmType.FastAStarLandmarks);
 		config.controler().setRunId(RUN_ID);
@@ -408,8 +410,8 @@ public class RunTamaSavPtModeChoice {
 
 		addDrtConfigGroup(config, AlPHA, WAIT_TIME, BETA, IS_REJECTION, IS_REBALANCE, SEATS, NUM_OF_VEHICLES, IS_STOP_BASED);
 		
-		//ConfigUtils.addOrGetModule(config, DrtSpeedUpConfigGroup.class);
-		//MultiModeDrtSpeedUpModule.addTeleportedDrtMode(config);
+		ConfigUtils.addOrGetModule(config, DrtSpeedUpConfigGroup.class);
+		MultiModeDrtSpeedUpModule.addTeleportedDrtMode(config);
 
 		return config;
 	}
